@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>zcroot.ai — AI/ML & DSA Lessons</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #080b10;
+    --surface: #0e1318;
+    --card: #131920;
+    --border: #1e2a35;
+    --accent: #00e5ff;
+    --accent2: #7c3aed;
+    --accent3: #10b981;
+    --text: #e8f0f7;
+    --muted: #6b7f8f;
+    --danger: #ef4444;
+    --success: #10b981;
+    --mono: 'Space Mono', monospace;
+    --sans: 'Syne', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Background grid */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,229,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,229,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Header */
+  header {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 40px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(8,11,16,0.9);
+    backdrop-filter: blur(12px);
+  }
+
+  .logo {
+    font-family: var(--mono);
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: -0.5px;
+  }
+
+  .logo span { color: var(--text); }
+
+  .track-badge {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 6px 14px;
+    border-radius: 100px;
+    letter-spacing: 0.5px;
+  }
+
+  /* Main */
+  main {
+    position: relative;
+    z-index: 1;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 48px 24px;
+  }
+
+  /* Lesson nav tabs */
+  .lesson-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 40px;
+  }
+
+  .tab-btn {
+    flex: 1;
+    padding: 14px 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--muted);
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .tab-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(0,229,255,0.05), transparent);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .tab-btn:hover::before { opacity: 1; }
+  .tab-btn:hover { border-color: rgba(0,229,255,0.3); color: var(--text); }
+
+  .tab-btn.active {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(0,229,255,0.05);
+  }
+
+  .tab-btn.active::before { opacity: 1; }
+
+  .tab-num {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--mono);
+    font-size: 11px;
+    flex-shrink: 0;
+  }
+
+  .tab-btn.active .tab-num {
+    background: var(--accent);
+    color: var(--bg);
+  }
+
+  .tab-check {
+    margin-left: auto;
+    color: var(--success);
+    font-size: 16px;
+    display: none;
+  }
+
+  .tab-btn.completed .tab-check { display: block; }
+
+  /* Lesson panel */
+  .lesson-panel { display: none; animation: fadeIn 0.3s ease; }
+  .lesson-panel.active { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Lesson header */
+  .lesson-header {
+    margin-bottom: 28px;
+  }
+
+  .lesson-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    background: rgba(0,229,255,0.08);
+    border: 1px solid rgba(0,229,255,0.2);
+    padding: 5px 12px;
+    border-radius: 100px;
+    margin-bottom: 16px;
+    letter-spacing: 0.5px;
+  }
+
+  .lesson-title {
+    font-size: 32px;
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 10px;
+    background: linear-gradient(135deg, var(--text), var(--muted));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .lesson-meta {
+    display: flex;
+    gap: 20px;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .lesson-meta span {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  /* Video container */
+  .video-wrap {
+    position: relative;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 24px;
+  }
+
+  .video-wrap iframe {
+    width: 100%;
+    height: 480px;
+    display: block;
+    border: none;
+  }
+
+  /* Unlock button */
+  .unlock-btn {
+    width: 100%;
+    padding: 18px;
+    background: linear-gradient(135deg, var(--accent2), #4f46e5);
+    border: none;
+    border-radius: 12px;
+    color: #fff;
+    font-family: var(--sans);
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 32px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .unlock-btn::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+    transition: left 0.5s;
+  }
+
+  .unlock-btn:hover::before { left: 100%; }
+  .unlock-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(124,58,237,0.4); }
+  .unlock-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+  .lock-icon { font-size: 18px; }
+
+  /* Quiz section */
+  .quiz-section {
+    display: none;
+    animation: fadeIn 0.4s ease;
+  }
+
+  .quiz-section.visible { display: block; }
+
+  .quiz-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 28px;
+  }
+
+  .quiz-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .quiz-progress {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .progress-bar {
+    width: 100%;
+    height: 3px;
+    background: var(--border);
+    border-radius: 100px;
+    margin-bottom: 36px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 100px;
+    transition: width 0.4s ease;
+  }
+
+  /* Question card */
+  .question-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px;
+    margin-bottom: 20px;
+  }
+
+  .question-number {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 1px;
+    margin-bottom: 14px;
+  }
+
+  .question-text {
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.5;
+    margin-bottom: 28px;
+    color: var(--text);
+  }
+
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .option-btn {
+    padding: 16px 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .option-letter {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--mono);
+    font-size: 11px;
+    flex-shrink: 0;
+    transition: all 0.2s;
+  }
+
+  .option-btn:hover:not(:disabled) {
+    border-color: rgba(0,229,255,0.3);
+    background: rgba(0,229,255,0.04);
+  }
+
+  .option-btn:hover:not(:disabled) .option-letter {
+    background: rgba(0,229,255,0.2);
+    color: var(--accent);
+  }
+
+  .option-btn.correct {
+    border-color: var(--success);
+    background: rgba(16,185,129,0.08);
+  }
+
+  .option-btn.correct .option-letter {
+    background: var(--success);
+    color: #fff;
+  }
+
+  .option-btn.wrong {
+    border-color: var(--danger);
+    background: rgba(239,68,68,0.08);
+  }
+
+  .option-btn.wrong .option-letter {
+    background: var(--danger);
+    color: #fff;
+  }
+
+  .option-btn:disabled { cursor: not-allowed; }
+
+  /* Feedback */
+  .feedback {
+    display: none;
+    padding: 16px 20px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    margin-top: 16px;
+    line-height: 1.5;
+  }
+
+  .feedback.show { display: block; animation: fadeIn 0.3s ease; }
+  .feedback.correct-fb { background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.3); color: #6ee7b7; }
+  .feedback.wrong-fb { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: #fca5a5; }
+
+  /* Next question btn */
+  .next-btn {
+    margin-top: 20px;
+    padding: 14px 28px;
+    background: var(--surface);
+    border: 1px solid var(--accent);
+    border-radius: 10px;
+    color: var(--accent);
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: none;
+  }
+
+  .next-btn.show { display: inline-flex; align-items: center; gap: 8px; }
+  .next-btn:hover { background: rgba(0,229,255,0.08); transform: translateX(4px); }
+
+  /* Score card */
+  .score-card {
+    display: none;
+    text-align: center;
+    padding: 60px 40px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    animation: fadeIn 0.4s ease;
+  }
+
+  .score-card.show { display: block; }
+
+  .score-emoji { font-size: 64px; margin-bottom: 20px; }
+
+  .score-number {
+    font-family: var(--mono);
+    font-size: 56px;
+    font-weight: 700;
+    color: var(--accent);
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+
+  .score-label {
+    font-size: 14px;
+    color: var(--muted);
+    margin-bottom: 32px;
+    font-family: var(--mono);
+  }
+
+  .score-message {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 40px;
+  }
+
+  .score-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .action-btn {
+    padding: 14px 28px;
+    border-radius: 10px;
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+  }
+
+  .action-btn.primary {
+    background: linear-gradient(135deg, var(--accent), #0891b2);
+    color: var(--bg);
+  }
+
+  .action-btn.primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,229,255,0.3); }
+
+  .action-btn.secondary {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--muted);
+  }
+
+  .action-btn.secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    header { padding: 16px 20px; }
+    main { padding: 32px 16px; }
+    .lesson-title { font-size: 24px; }
+    .video-wrap iframe { height: 220px; }
+    .question-card { padding: 20px; }
+    .lesson-tabs { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">zcroot<span>.ai</span></div>
+  <div class="track-badge">AI/ML · DSA FUNDAMENTALS</div>
+</header>
+
+<main>
+
+  <!-- Lesson tabs -->
+  <div class="lesson-tabs">
+    <button class="tab-btn active" onclick="switchLesson(0)">
+      <div class="tab-num">1</div>
+      Data Structures & Algorithms
+      <span class="tab-check">✓</span>
+    </button>
+    <button class="tab-btn" onclick="switchLesson(1)">
+      <div class="tab-num">2</div>
+      Machine Learning Fundamentals
+      <span class="tab-check">✓</span>
+    </button>
+  </div>
+
+  <!-- LESSON 1: DSA -->
+  <div class="lesson-panel active" id="lesson-0">
+    <div class="lesson-header">
+      <div class="lesson-tag">⚡ Lesson 01</div>
+      <h1 class="lesson-title">Data Structures<br/>& Algorithms</h1>
+      <div class="lesson-meta">
+        <span>🎬 ~2 min</span>
+        <span>📊 Beginner friendly</span>
+        <span>🧠 3 questions</span>
+      </div>
+    </div>
+
+    <div class="video-wrap">
+      <iframe src="https://app.heygen.com/embeds/c58212d5199a48d3be5950950e9369b2"
+        title="HeyGen video player"
+        allow="encrypted-media; fullscreen;"
+        allowfullscreen></iframe>
+    </div>
+
+    <button class="unlock-btn" id="unlock-0" onclick="unlockQuiz(0)">
+      <span class="lock-icon">✍️</span>
+      Finished watching? Unlock & Start Quiz
+    </button>
+
+    <div class="quiz-section" id="quiz-0"></div>
+  </div>
+
+  <!-- LESSON 2: ML -->
+  <div class="lesson-panel" id="lesson-1">
+    <div class="lesson-header">
+      <div class="lesson-tag">🤖 Lesson 02</div>
+      <h1 class="lesson-title">Machine Learning<br/>Fundamentals</h1>
+      <div class="lesson-meta">
+        <span>🎬 ~2 min</span>
+        <span>📊 Beginner friendly</span>
+        <span>🧠 3 questions</span>
+      </div>
+    </div>
+
+    <div class="video-wrap">
+      <iframe src="https://app.heygen.com/embeds/bba31d792aa5430184a8b22ed0110cb1"
+        title="HeyGen video player"
+        allow="encrypted-media; fullscreen;"
+        allowfullscreen></iframe>
+    </div>
+
+    <button class="unlock-btn" id="unlock-1" onclick="unlockQuiz(1)">
+      <span class="lock-icon">✍️</span>
+      Finished watching? Unlock & Start Quiz
+    </button>
+
+    <div class="quiz-section" id="quiz-1"></div>
+  </div>
+
+</main>
+
+<script>
+const lessons = [
+  {
+    questions: [
+      {
+        q: "You loop through an array of N elements once to find the maximum value. What is the time complexity?",
+        options: ["O(1)", "O(log N)", "O(N)", "O(N²)"],
+        correct: 2,
+        feedback: "Correct! O(N) — you visit each element exactly once, so the time grows linearly with input size."
+      },
+      {
+        q: "You're building a browser history feature with back and forward buttons. Which data structure is the best fit?",
+        options: ["Queue", "Stack", "Hash Map", "Linked List"],
+        correct: 1,
+        feedback: "Correct! A Stack uses Last In First Out (LIFO) — perfect for navigation history where you go back to the most recent page first."
+      },
+      {
+        q: "You need to find the shortest path between two nodes in an unweighted graph. Which algorithm do you use?",
+        options: ["DFS — Depth First Search", "BFS — Breadth First Search", "Dynamic Programming", "Binary Search"],
+        correct: 1,
+        feedback: "Correct! BFS explores level by level, so the first time it reaches the destination is guaranteed to be via the shortest path."
+      }
+    ]
+  },
+  {
+    questions: [
+      {
+        q: "You're building a spam email detector that classifies emails as spam or not spam. What type of ML problem is this?",
+        options: ["Unsupervised Learning", "Reinforcement Learning", "Supervised Classification", "Regression"],
+        correct: 2,
+        feedback: "Correct! You have labelled data (spam / not spam) and a categorical output — that's supervised classification."
+      },
+      {
+        q: "You want to predict a student's exam score based on hours studied. Which algorithm should you use?",
+        options: ["Logistic Regression", "Linear Regression", "K-Means Clustering", "Decision Tree Classifier"],
+        correct: 1,
+        feedback: "Correct! Linear Regression is used when your output is a continuous number (exam score), not a category."
+      },
+      {
+        q: "Your fraud detection model has 99% accuracy but catches only 10% of actual fraud cases. Which metric should you focus on improving?",
+        options: ["Accuracy", "Precision", "Recall", "F1 Score"],
+        correct: 2,
+        feedback: "Correct! Recall measures how many actual positives your model catches. Low Recall means you're missing real fraud — far more costly than a misleading accuracy number."
+      }
+    ]
+  }
+];
+
+let currentLesson = 0;
+let currentQ = {};
+let scores = {};
+let completed = {};
+
+function switchLesson(idx) {
+  document.querySelectorAll('.lesson-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('lesson-' + idx).classList.add('active');
+  document.querySelectorAll('.tab-btn')[idx].classList.add('active');
+  currentLesson = idx;
+}
+
+function unlockQuiz(lessonIdx) {
+  document.getElementById('unlock-' + lessonIdx).style.display = 'none';
+  const quizEl = document.getElementById('quiz-' + lessonIdx);
+  quizEl.classList.add('visible');
+  currentQ[lessonIdx] = 0;
+  scores[lessonIdx] = 0;
+  renderQuestion(lessonIdx);
+}
+
+function renderQuestion(lessonIdx) {
+  const quiz = lessons[lessonIdx];
+  const qIdx = currentQ[lessonIdx];
+  const total = quiz.questions.length;
+  const q = quiz.questions[qIdx];
+  const quizEl = document.getElementById('quiz-' + lessonIdx);
+  const pct = (qIdx / total) * 100;
+
+  quizEl.innerHTML = `
+    <div class="quiz-header">
+      <div class="quiz-title">⚡ Quick Check</div>
+      <div class="quiz-progress">${qIdx + 1} / ${total}</div>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+    <div class="question-card">
+      <div class="question-number">QUESTION ${qIdx + 1}</div>
+      <div class="question-text">${q.q}</div>
+      <div class="options">
+        ${q.options.map((opt, i) => `
+          <button class="option-btn" onclick="selectAnswer(${lessonIdx}, ${i})">
+            <div class="option-letter">${'ABCD'[i]}</div>
+            ${opt}
+          </button>
+        `).join('')}
+      </div>
+      <div class="feedback" id="feedback-${lessonIdx}"></div>
+      <button class="next-btn" id="next-${lessonIdx}" onclick="nextQuestion(${lessonIdx})">
+        ${qIdx + 1 < total ? 'Next Question →' : 'See Results →'}
+      </button>
+    </div>
+  `;
+}
+
+function selectAnswer(lessonIdx, selectedIdx) {
+  const q = lessons[lessonIdx].questions[currentQ[lessonIdx]];
+  const buttons = document.querySelectorAll(`#quiz-${lessonIdx} .option-btn`);
+  const feedback = document.getElementById(`feedback-${lessonIdx}`);
+  const nextBtn = document.getElementById(`next-${lessonIdx}`);
+
+  buttons.forEach(b => b.disabled = true);
+
+  const isCorrect = selectedIdx === q.correct;
+  buttons[selectedIdx].classList.add(isCorrect ? 'correct' : 'wrong');
+  if (!isCorrect) buttons[q.correct].classList.add('correct');
+
+  if (isCorrect) {
+    scores[lessonIdx] = (scores[lessonIdx] || 0) + 1;
+    feedback.className = 'feedback correct-fb show';
+    feedback.innerHTML = '✅ ' + q.feedback;
+  } else {
+    feedback.className = 'feedback wrong-fb show';
+    feedback.innerHTML = `❌ Not quite. The correct answer is <strong>${'ABCD'[q.correct]}</strong>. ${q.feedback}`;
+  }
+
+  nextBtn.classList.add('show');
+}
+
+function nextQuestion(lessonIdx) {
+  currentQ[lessonIdx]++;
+  const total = lessons[lessonIdx].questions.length;
+  if (currentQ[lessonIdx] >= total) {
+    showScore(lessonIdx);
+  } else {
+    renderQuestion(lessonIdx);
+  }
+}
+
+function showScore(lessonIdx) {
+  const score = scores[lessonIdx] || 0;
+  const total = lessons[lessonIdx].questions.length;
+  const pct = Math.round((score / total) * 100);
+  const quizEl = document.getElementById('quiz-' + lessonIdx);
+  const nextLesson = lessonIdx + 1;
+  const hasNext = nextLesson < lessons.length;
+
+  let emoji = pct === 100 ? '🏆' : pct >= 66 ? '🎯' : '📚';
+  let message = pct === 100
+    ? 'Perfect score! You nailed it.'
+    : pct >= 66
+    ? 'Great work! Strong understanding.'
+    : 'Keep going — revisit the video and try again!';
+
+  completed[lessonIdx] = true;
+  document.querySelectorAll('.tab-btn')[lessonIdx].classList.add('completed');
+
+  quizEl.innerHTML = `
+    <div class="score-card show">
+      <div class="score-emoji">${emoji}</div>
+      <div class="score-number">${score}/${total}</div>
+      <div class="score-label">SCORE · ${pct}%</div>
+      <div class="score-message">${message}</div>
+      <div class="score-actions">
+        ${hasNext ? `<button class="action-btn primary" onclick="switchLesson(${nextLesson})">Next Lesson →</button>` : '<button class="action-btn primary" disabled>🎉 Course Complete!</button>'}
+        <button class="action-btn secondary" onclick="retryLesson(${lessonIdx})">↺ Retry</button>
+      </div>
+    </div>
+  `;
+}
+
+function retryLesson(lessonIdx) {
+  const quizEl = document.getElementById('quiz-' + lessonIdx);
+  const unlockBtn = document.getElementById('unlock-' + lessonIdx);
+  quizEl.classList.remove('visible');
+  quizEl.innerHTML = '';
+  unlockBtn.style.display = 'flex';
+}
+</script>
+</body>
+</html>
