@@ -1,4 +1,4 @@
-A mini interactive lesson platform built as part of the zcroot.ai AI/ML Internship task.
+A mini interactive lesson platform.
 
 -Live demo: https://zcroot-lesson-r5yz.vercel.app/
 
@@ -23,5 +23,3 @@ HTML, CSS, JavaScript
 HeyGen AI Avatar Video Embedding
 Deployed on Vercel
 
-Built by
-Anisha Tiwary — Final year ECS Engineering, KIIT University
